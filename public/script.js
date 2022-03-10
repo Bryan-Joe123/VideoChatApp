@@ -6,7 +6,26 @@ var peer = new Peer(undefined, {
     port: "443",
 });
 
-const user = prompt("Enter your name");
+const user = prompt("Enter your name:");
+const my_video = document.createElement("video")
+my_video.muted = true
+
+var my_stream = null
+navigator.mediaDevices.getUserMedia({
+    audio:true,
+    video:true
+}).then((stream)=>{
+    my_stream = stream
+    addVideoStream(my_video,my_stream)
+})
+
+function addVideoStream(video,stream){
+    video.srcObject = stream
+    video.addEventListener("loadedMetaData",()=>{
+        video.play()
+        $("#video_grid").append(video)
+    })
+}
 
 $(function () {
     $("#show_chat").click(function () {
