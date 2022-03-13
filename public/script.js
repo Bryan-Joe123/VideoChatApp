@@ -93,13 +93,15 @@ $(function () {
 
     $("#stop_video").click(function () {
         const enabled = myStream.getVideoTracks()[0].enabled
-        myStream.getVideoTracks()[0].enabled = !enabled
+        // myStream.getVideoTracks()[0].enabled = !enabled
         if (enabled) {
-            html = `<i class="fas fa-video-slash"><i/>`
+            myStream.getVideoTracks()[0].enabled = false
+            html = `<i class="fa fa-video-slash"><i/>`
             $("stop_video").toggleClass("background_red")
             $("stop_video").html(html)
         } else {
-            html = `<i class="fas fa-video"><i/>`
+            myStream.getVideoTracks()[0].enabled = true
+            html = `<i class="fa fa-video"><i/>`
             $("stop_video").toggleClass("background_red")
             $("stop_video").html(html)
         }
