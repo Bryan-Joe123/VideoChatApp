@@ -6,27 +6,50 @@ var peer = new Peer(undefined, {
     port: "443",
 });
 
-const user = prompt("Enter your name:");
-const my_video = document.createElement("video")
-my_video.muted = true
+const user = prompt("Enter your name");
 
-var my_stream = null
-navigator.mediaDevices.getUserMedia({
-    audio:true,
-    video:true
-}).then((stream)=>{
-    my_stream = stream
-    addVideoStream(my_video,my_stream)
-})
+const myVideo = document.createElement("video");
+myVideo.muted = true;
 
-function addVideoStream(video, stream) {
-    video
-    video.srcObject = stream
-    video.addEventListener("loadedmetadata",()=>{
-        video.play()
-        $("#video_grid").append(video)
+let myStream;
+
+navigator.mediaDevices
+    .getUserMedia({
+        audio: true,
+        video: true,
+    })
+    .then((stream) => {
+        myStream = stream;
+        addVideoStream(myVideo, stream);
+        socket.on("user-connected",(userID)=>{
+            connectToNewUser(userID,stream)
+        })
+        peer.on("call",(call)=>{
+            call.answer(stream)
+            const video = document.createElement('video')
+
+            call.on("stream", (userVideoStream)=>{
+                addVideoStream(video, userVideoStream)
+            })
+        })
+    })
+
+function connectToNewUser(userID, stream){
+    const call = peer.call(userID,stream)
+    const video = document.createElement("video")
+    
+    call.on("stream",(userVideoStream)=>{
+        addVideoStream(video, userVideoStream)
     })
 }
+
+function addVideoStream(video, stream) {
+    video.srcObject = stream;
+    video.addEventListener("loadedmetadata", () => {
+        video.play();
+        $("#video_grid").append(video)
+    });
+};
 
 $(function () {
     $("#show_chat").click(function () {
