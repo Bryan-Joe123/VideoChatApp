@@ -1,3 +1,5 @@
+const { response } = require("express");
+
 const socket = io("/");
 
 var peer = new Peer(undefined, {
@@ -107,6 +109,26 @@ $(function () {
         }
     })
 
+    $("#invite_button").click(function () {
+        const to = prompt("Enter email to send invitation: ")
+        let data = {
+            url:window.location.href,
+            to:to
+        }
+        $.ajax({
+            url:"/send-mail",
+            type:"post",
+            data:JSON.stringify(data),
+            dataType:"json",
+            contentType:"application/json",
+            success: function (result){
+                alert("Invitation Has Been Send to the User!!")
+            },
+            error:function (error){
+                console.log(error.responseJson)
+            }
+        })
+    })
 })
 
 peer.on("open", (id) => {
